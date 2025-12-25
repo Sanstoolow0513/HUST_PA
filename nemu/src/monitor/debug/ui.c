@@ -36,6 +36,26 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_info(char *args){
+  char *arg = strtok(NULL, " ");
+
+  if (arg == NULL) {
+    printf("Usage: info r | info w\n");
+    return 0;
+  }
+  
+  if (strcmp(arg, "r") == 0) {
+    isa_reg_display();
+  }
+  else if (strcmp(arg,"w")==0){
+    // 打印监视点
+    printf("没有监视点\n");
+  }else {
+    printf("未知命令\n");//其他情况
+  }
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -44,6 +64,7 @@ static struct {
   int (*handler) (char *);
 } cmd_table [] = {
   { "help", "Display informations about all supported commands", cmd_help },
+  { "info", "Print information (r: registers, w: watchpoints)",cmd_info },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 
