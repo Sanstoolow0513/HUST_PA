@@ -68,6 +68,37 @@ static int cmd_info(char *args){
   return 0;
 }
 
+static int cmd_x(char *args) {
+  if (args == NULL) {
+    printf("Usage: x N EXPR\n");
+    return 0;
+  }
+  
+  char *n_str = strtok(args, " ");
+  if (n_str == NULL) {
+    printf("Missing N\n");
+    return 0;
+  }
+  int n = atoi(n_str);
+  
+  char *expr_str = strtok(NULL, " ");
+  if (expr_str == NULL) {
+    printf("Missing address expression\n");
+    return 0;
+  }
+  
+  uint32_t addr;
+  sscanf(expr_str, "%x", &addr);  // %x 表示读取十六进制
+  
+  int i;
+  for (i = 0; i < n; i++) {
+    uint32_t data = vaddr_read(addr + i * 4, 4);
+    printf("0x%08x: 0x%08x\n", addr + i * 4, data);
+  }
+  
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -79,6 +110,7 @@ static struct {
   { "info", "Print information (r: registers, w: watchpoints)",cmd_info },
   { "c", "Continue the execution of the program", cmd_c },
   { "si", "Single step execution", cmd_si},
+  { "x", "Exmaine memory", cmd_x},
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
