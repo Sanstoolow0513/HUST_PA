@@ -8,8 +8,25 @@ const char *regsl[] = {
 };
 
 void isa_reg_display() {
+  int i;
+  for(i = 0; i<32;i++){
+    printf("%s\t0x%08x\t%d\n", regsl[i], reg_l(i), reg_l(i));
+  }
+  printf("pc\t0x%08x\t%d\n", cpu.pc, cpu.pc);
 }
 
 uint32_t isa_reg_str2val(const char *s, bool *success) {
+  int i;
+  // 带$前缀test
+  if (s[0] == '$') s++;
+  
+  for (i = 0; i < 32; i++) {
+    if (strcmp(regsl[i], s) == 0) {
+      *success = true;
+      return reg_l(i);
+    }
+  }
+  
+  *success = false;
   return 0;
 }
