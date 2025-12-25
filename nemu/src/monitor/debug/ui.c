@@ -38,6 +38,16 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char *args){
+  uint64_t n = 1;
+
+  if (args != NULL) {
+    n = atoi(args);  //字符串转整数
+  }
+  cpu_exec(n);
+  return 0;
+}
+
 static int cmd_info(char *args){
   char *arg = strtok(NULL, " ");
 
@@ -68,6 +78,7 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "info", "Print information (r: registers, w: watchpoints)",cmd_info },
   { "c", "Continue the execution of the program", cmd_c },
+  { "si", "Single step execution", cmd_si},
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
