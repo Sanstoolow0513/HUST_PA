@@ -59,12 +59,21 @@ static int cmd_info(char *args){
   if (strcmp(arg, "r") == 0) {
     isa_reg_display();
   }
-  else if (strcmp(arg,"w")==0){
-    // 打印监视点
-    printf("没有监视点\n");
-  }else {
-    printf("未知命令\n");//其他情况
+  else if (strcmp(arg, "w") == 0) {
+  extern WP* get_head();
+  WP *head = get_head();
+  
+  if (head == NULL) {
+    printf("No watchpoints\n");
+  } else {
+    printf("%-5s %-20s %-15s\n", "NO", "Expr", "Value");
+    printf("---- -------------------- ---------------\n");
+    WP *p;
+    for (p = head; p != NULL; p = p->next) {
+      printf("%-5d %-20s 0x%08x\n", p->NO, p->expr, p->old_val);
+    }
   }
+}
   return 0;
 }
 static int cmd_p(char *args) {
@@ -80,6 +89,33 @@ static int cmd_p(char *args) {
     printf("%u (0x%08x)\n", result, result);
   } else {
     printf("Expression evaluation failed\n");
+  }
+  
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  if (args == NULL) {
+    printf("Usage: d N\n");
+    return 0;
+  }
+  
+  int NO = atoi(args);
+  free_wp(NO);
+  
+  return 0;
+}
+
+static int cmd_w(char *args){
+  if (args == NULL) {
+    printf("Usage: w EXPR\n");
+    return 0;
+  }
+  
+  WP *wp = new_wp(args);
+  if (wp != NULL) {
+    printf("Set watchpoint %d: %s\n", wp->NO, wp->expr);
+    printf("Old value = 0x%08x\n", wp->old_val);
   }
   
   return 0;
@@ -126,6 +162,8 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "info", "Print information (r: registers, w: watchpoints)",cmd_info },
   { "c", "Continue the execution of the program", cmd_c },
+  { "w", "Set watchpoint: w EXPR", cmd_w },
+{ "d", "Delete watchpoint: d N", cmd_d },
   { "p", "Evaluate expression", cmd_p},
   { "si", "Single step execution", cmd_si},
   { "x", "Exmaine memory", cmd_x},
