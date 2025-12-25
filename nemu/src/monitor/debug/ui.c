@@ -67,6 +67,23 @@ static int cmd_info(char *args){
   }
   return 0;
 }
+static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("Usage: p EXPR\n");
+    return 0;
+  }
+  
+  bool success = true;
+  uint32_t result = expr(args, &success);
+  
+  if (success) {
+    printf("%u (0x%08x)\n", result, result);
+  } else {
+    printf("Expression evaluation failed\n");
+  }
+  
+  return 0;
+}
 
 static int cmd_x(char *args) {
   if (args == NULL) {
@@ -109,6 +126,7 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "info", "Print information (r: registers, w: watchpoints)",cmd_info },
   { "c", "Continue the execution of the program", cmd_c },
+  { "p", "Evaluate expression", cmd_p},
   { "si", "Single step execution", cmd_si},
   { "x", "Exmaine memory", cmd_x},
   { "q", "Exit NEMU", cmd_q },
