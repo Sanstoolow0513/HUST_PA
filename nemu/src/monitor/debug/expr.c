@@ -7,9 +7,19 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ
-
-  /* TODO: Add more token types */
+  TK_NOTYPE = 256, TK_EQ,
+  TK_PLUS,      // +
+  TK_MINUS,     // -
+  TK_MULT,      // *
+  TK_DIV,       // /
+  TK_LPAREN,    // (
+  TK_RPAREN,    // )
+  TK_DEC_NUM,   // 十进制
+  TK_HEX_NUM,   // 十六进制
+  TK_REG,       // $sp, $a0
+  TK_DEREF,     // *
+  TK_NEQ,       // !=
+  TK_AND        // &&
 
 };
 
@@ -21,10 +31,19 @@ static struct rule {
   /* TODO: Add more rules.
    * Pay attention to the precedence level of different rules.
    */
-
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
-  {"==", TK_EQ}         // equal
+  {"-", TK_MINUS},      // minus
+  {"\\*", '*'},         // multiply/dereference
+  {"/", '/'},           // divide
+  {"==", TK_EQ},        // equal
+  {"!=", TK_NEQ},       // not equal
+  {"&&", TK_AND},       // logical and
+  {"\\(", '('},         // left paren
+  {"\\)", ')'},         // right paren
+  {"0x[0-9a-fA-F]+", TK_HEX_NUM},  // hexadecimal number
+  {"[0-9]+", TK_DEC_NUM},          // decimal number
+  {"\\$[a-zA-Z0-9]+", TK_REG},     // register $sp, $a0等
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -80,7 +99,27 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case TK_NOTYPE:
+            // 空格，什么都不做，只是跳过
+            break;
+          case '+': case '-': case '*': case '/':
+          case '(': case ')': case '!':
+            // 单字符运算符和括号
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token++;
+            break;
+          case TK_DEC_NUM:
+          case TK_HEX_NUM:
+          case TK_EQ: case TK_NEQ:
+          case TK_AND: case TK_MINUS: case TK_REG:
+            // 需要保存字符串的token
+            tokens[nr_token].type = rules[i].token_type;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';  // 确保字符串结束
+            nr_token++;
+            break;
+          default:
+            panic("Unknown token type: %d\n", rules[i].token_type);
         }
 
         break;
