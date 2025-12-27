@@ -22,6 +22,17 @@ static inline make_DopHelper(r) {
   print_Dop(op->str, OP_STR_SIZE, "%s", reg_name(op->reg, 4));
 }
 
+make_DHelper(B) {
+  int32_t imm = (decinfo.isa.instr.simm12 << 12) |
+                (decinfo.isa.instr.imm4_1 << 1) |
+                (decinfo.isa.instr.imm10_5 << 5);
+  if (decinfo.isa.instr.simm12) {
+    imm |= 0xFFFE0000;
+  }
+  decode_op_r(id_src, decinfo.isa.instr.rs1, true);
+  decode_op_r(id_src2, decinfo.isa.instr.rs2, true);
+  decode_op_i(id_dest, imm, false);  
+}
 
 make_DHelper(R){
   decode_op_r(id_src, decinfo.isa.instr.rs1, true);

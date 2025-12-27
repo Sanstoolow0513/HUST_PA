@@ -9,6 +9,6 @@ make_EHelper(jal);
 make_EHelper(jalr);
 make_EHelper(alu_r);
 make_EHelper(auipc);
-
+make_EHelper(branch);
 make_EHelper(inv);
 make_EHelper(nemu_trap);
