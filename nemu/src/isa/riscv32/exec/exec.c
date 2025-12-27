@@ -2,7 +2,7 @@
 #include "all-instr.h"
 
 static OpcodeEntry load_table [8] = {
-  EXW(ld, 1), EXW(ld, 2), EXW(ld, 4), EMPTY, EXW(ld, 1), EXW(ld, 2), EMPTY, EMPTY
+  EXW(ld, 1), EXW(ld, 2), EXW(ld, 4), EMPTY, EXW(ldu, 1), EXW(ldu, 2), EMPTY, EMPTY
 };
 
 static make_EHelper(load) {
@@ -17,6 +17,17 @@ static OpcodeEntry store_table [8] = {
 static make_EHelper(store) {
   decinfo.width = store_table[decinfo.isa.instr.funct3].width;
   idex(pc, &store_table[decinfo.isa.instr.funct3]);
+}
+
+make_EHelper(ldu) {
+  rtl_lm(&s0, &id_src->addr, decinfo.width);
+  rtl_sr(id_dest->reg, &s0, 4);
+
+  switch (decinfo.width) {
+    case 2: print_asm_template2(lhu); break;
+    case 1: print_asm_template2(lbu); break;
+    default: assert(0);
+  }
 }
 
 static OpcodeEntry opcode_table [32] = {

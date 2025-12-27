@@ -12,3 +12,4 @@ make_EHelper(auipc);
 make_EHelper(branch);
 make_EHelper(inv);
 make_EHelper(nemu_trap);
+make_EHelper(ldu);
