@@ -23,12 +23,24 @@ make_EHelper(alu_i){
       }
       break;
 
+    case 0x2:  // slti 
+      rtl_setrelopi(RELOP_LT, &s0, &id_src->val, id_src2->imm);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(slti);
+      break;
+
     case 0x3:  // sltiu 
       rtl_setrelopi(RELOP_LTU, &s0, &id_src->val, id_src2->imm);
       rtl_sr(id_dest->reg, &s0, 4);
       print_asm_template3(sltiu);
       break;
 
+    case 0x4:  // xori
+      rtl_xori(&s0, &id_src->val, id_src2->imm);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(xori);
+      break;
+    
     case 0x5:  // srli or srai
       {
       rtlreg_t shamt_val = id_src2->imm & 0x1F;
@@ -44,7 +56,18 @@ make_EHelper(alu_i){
       rtl_sr(id_dest->reg, &s0, 4);
       }
       break;
+    case 0x6:  // ori
+      rtl_ori(&s0, &id_src->val, id_src2->imm);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(ori);
+      break;
 
+    case 0x7:  // andi
+      rtl_andi(&s0, &id_src->val, id_src2->imm);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(andi);
+      break;
+      
     default:
       printf("alu_i: unknown funct3=0x%x\n", decinfo.isa.instr.funct3);
       assert(0);
