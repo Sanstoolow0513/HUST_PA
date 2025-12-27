@@ -19,3 +19,11 @@ make_EHelper(alu_i){
       assert(0);
   }
 }
+
+make_EHelper(auipc) {
+  // sp = PC + (imm << 12)
+  rtl_add(&s0, pc, &id_src->val);
+  rtl_sr(id_dest->reg, &s0, 4);
+
+  print_asm_template2(auipc);
+}
