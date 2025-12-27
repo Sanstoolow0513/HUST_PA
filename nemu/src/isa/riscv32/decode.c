@@ -23,11 +23,15 @@ static inline make_DopHelper(r) {
 }
 
 make_DHelper(B) {
-  int32_t imm = (decinfo.isa.instr.simm12 << 12) |
-                (decinfo.isa.instr.imm4_1 << 1) |
-                (decinfo.isa.instr.imm10_5 << 5);
-  if (decinfo.isa.instr.simm12) {
-    imm |= 0xFFFE0000;
+  uint32_t instr = decinfo.isa.instr.val;
+
+  /* B型指令: imm[12|10:5|rs2|rs1|funct3|imm[4:1|11]|opcode */
+  int32_t imm = ((instr >> 31) & 0x1) << 12 |   /* imm[12] */
+                ((instr >> 25) & 0x3F) << 5 |    /* imm[10:5] */
+                ((instr >> 8) & 0xF) << 1 |     /* imm[4:1] */
+                ((instr >> 7) & 0x1) << 11;    /* imm[11] */
+  if (imm & 0x1000) {
+    imm |= 0xFFFFE000;
   }
   decode_op_r(id_src, decinfo.isa.instr.rs1, true);
   decode_op_r(id_src2, decinfo.isa.instr.rs2, true);
