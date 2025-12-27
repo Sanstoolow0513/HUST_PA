@@ -16,10 +16,10 @@ make_EHelper(alu_i){
 
     case 0x1:  // slli
       {
-        uint8_t shamt = id_src2->imm & 0x1F;  // 低5位是移位量
-        rtl_shl(&s0, &id_src->val, shamt);
-        rtl_sr(id_dest->reg, &s0, 4);
-        print_asm_template3(slli);
+      rtlreg_t shamt_val = id_src2->imm & 0x1F;
+      rtl_shl(&s0, &id_src->val, &shamt_val);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(slli);
       }
       break;
 
@@ -31,17 +31,17 @@ make_EHelper(alu_i){
 
     case 0x5:  // srli or srai
       {
-        uint8_t shamt = id_src2->imm & 0x1F;
-        if (decinfo.isa.instr.funct7 == 0x00) {  // srli
-          rtl_shr(&s0, &id_src->val, shamt);
-          print_asm_template3(srli);
-        } else if (decinfo.isa.instr.funct7 == 0x20) {  // srai
-          rtl_sar(&s0, &id_src->val, shamt);
-          print_asm_template3(srai);
-        } else {
-          assert(0);
-        }
-        rtl_sr(id_dest->reg, &s0, 4);
+      rtlreg_t shamt_val = id_src2->imm & 0x1F;
+      if (decinfo.isa.instr.funct7 == 0x00) {  // srli
+        rtl_shr(&s0, &id_src->val, &shamt_val);
+        print_asm_template3(srli);
+      } else if (decinfo.isa.instr.funct7 == 0x20) {  // srai
+        rtl_sar(&s0, &id_src->val, &shamt_val);
+        print_asm_template3(srai);
+      } else {
+        assert(0);
+      }
+      rtl_sr(id_dest->reg, &s0, 4);
       }
       break;
 
