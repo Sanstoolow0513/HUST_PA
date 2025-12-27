@@ -84,46 +84,87 @@ make_EHelper(auipc) {
 
 make_EHelper(alu_r) {
   switch (decinfo.isa.instr.funct3) {
-    case 0x0:  // add/sub/mul
-      switch (decinfo.isa.instr.funct7) {
-        case 0x00:  // add
-          rtl_add(&s0, &id_src->val, &id_src2->val);
-          rtl_sr(id_dest->reg, &s0, 4);
-          print_asm_template3(add);
-          break;
-        case 0x20:  // sub
-          rtl_sub(&s0, &id_src->val, &id_src2->val);
-          rtl_sr(id_dest->reg, &s0, 4);
-          print_asm_template3(sub);
-          break;
-        case 0x01:  // mul
-          rtl_mul_lo(&s0, &id_src->val, &id_src2->val);
-          rtl_sr(id_dest->reg, &s0, 4);
-          print_asm_template3(mul);
-          break;
-        default:
-          printf("alu_r: unknown funct7=0x%x (funct3=0x0)\n", decinfo.isa.instr.funct7);
-          assert(0);
-      }
-      break;
+     case 0x0:  // add/sub/mul
+    switch (decinfo.isa.instr.funct7) {
+      case 0x00:  // add
+        rtl_add(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(add);
+        break;
+      case 0x01:  // mul
+        rtl_mul_lo(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(mul);
+        break;
+      case 0x20:  // sub
+        rtl_sub(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(sub);
+        break;
+      default:
+        printf("alu_r: unknown funct7=0x%x (funct3=0x0)\n", decinfo.isa.instr.funct7);
+        assert(0);
+    }
+    break;
 
-    case 0x1:  // sll (shift left logical)
-      rtl_shl(&s0, &id_src->val, &id_src2->val);
-      rtl_sr(id_dest->reg, &s0, 4);
-      print_asm_template3(sll);
-      break;
-    
-    case 0x2:  // slt
-      rtl_setrelop(RELOP_LT, &s0, &id_src->val, &id_src2->val);
-      rtl_sr(id_dest->reg, &s0, 4);
-      print_asm_template3(slt);
-      break;
-    
-    case 0x3:  // sltu
-      rtl_setrelop(RELOP_LTU, &s0, &id_src->val, &id_src2->val);
-      rtl_sr(id_dest->reg, &s0, 4);
-      print_asm_template3(sltu);
-      break;
+  case 0x1:  // sll/mulh
+    switch (decinfo.isa.instr.funct7) {
+      case 0x00:  // sll
+        rtl_shl(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(sll);
+        break;
+      case 0x01:  // mulh
+        rtl_imul_hi(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(mulh);
+        break;
+      default:
+        printf("alu_r: unknown funct7=0x%x (funct3=0x1)\n", decinfo.isa.instr.funct7);
+        assert(0);
+    }
+    break;
+
+  case 0x2:  // slt/mulhsu
+    switch (decinfo.isa.instr.funct7) {
+      case 0x00:  // slt
+        rtl_setrelop(RELOP_LT, &s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(slt);
+        break;
+      case 0x01:  // mulhsu
+        {
+          int64_t src1_signed = (int32_t)id_src->val;
+          uint32_t src2_unsigned = id_src2->val;
+          int64_t result = src1_signed * src2_unsigned;
+          s0 = (uint32_t)(result >> 32);
+        }
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(mulhsu);
+        break;
+      default:
+        printf("alu_r: unknown funct7=0x%x (funct3=0x2)\n", decinfo.isa.instr.funct7);
+        assert(0);
+    }
+    break;
+
+  case 0x3:  // sltu/mulhu
+    switch (decinfo.isa.instr.funct7) {
+      case 0x00:  // sltu
+        rtl_setrelop(RELOP_LTU, &s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(sltu);
+        break;
+      case 0x01:  // mulhu
+        rtl_mul_hi(&s0, &id_src->val, &id_src2->val);
+        rtl_sr(id_dest->reg, &s0, 4);
+        print_asm_template3(mulhu);
+        break;
+      default:
+        printf("alu_r: unknown funct7=0x%x (funct3=0x3)\n", decinfo.isa.instr.funct7);
+        assert(0);
+    }
+    break;
 
     case 0x4:  // xor/div
       switch (decinfo.isa.instr.funct7) {
