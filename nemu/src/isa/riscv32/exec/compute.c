@@ -79,10 +79,12 @@ make_EHelper(alu_r) {
           print_asm_template3(mul);
           break;
         default:
+          printf("alu_r: unknown funct7=0x%x (funct3=0x0)\n", decinfo.isa.instr.funct7);
           assert(0);
       }
       break;
     default:
+      printf("alu_r: unknown funct3=0x%x, funct7=0x%x\n", decinfo.isa.instr.funct3, decinfo.isa.instr.funct7);
       assert(0);
   }
 }
