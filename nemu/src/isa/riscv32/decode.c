@@ -59,19 +59,14 @@ make_DHelper(I){
 }
 
 make_DHelper(J){
-      printf("J DEBUG: val=0x%x\n", decinfo.isa.instr.val);
-      printf("  simm20=%d, imm10_1=0x%x, imm11_=%d, imm19_12=0x%x\n",
-             decinfo.isa.instr.simm20,
-             decinfo.isa.instr.imm10_1,
-             decinfo.isa.instr.imm11_,
-             decinfo.isa.instr.imm19_12);
-
-      int32_t imm = (decinfo.isa.instr.simm20 << 20) |
-                  (decinfo.isa.instr.imm10_1 << 1) |
-                  (decinfo.isa.instr.imm11 << 11) |
-                  (decinfo.isa.instr.imm19_12 << 12);
-      printf("  imm before sext=0x%x (%d)\n", imm, imm);
-
-      decode_op_i(id_src, imm, true);
-      decode_op_r(id_dest, decinfo.isa.instr.rd, false);
+  uint32_t instr = decinfo.isa.instr.val;
+  int32_t imm = ((instr >> 31) & 0x1) << 20 |
+                ((instr >> 21) & 0x3FF) << 1 |
+                ((instr >> 20) & 0x1) << 11 |
+                ((instr >> 12) & 0xFF) << 12;
+  if (imm & 0x80000) {
+    imm |= 0xFFE00000;
+  }
+  decode_op_i(id_src, imm, true);
+  decode_op_r(id_dest, (instr >> 7) & 0x1F, false);
 }
