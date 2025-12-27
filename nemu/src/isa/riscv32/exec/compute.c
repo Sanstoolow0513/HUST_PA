@@ -7,15 +7,21 @@ make_EHelper(lui) {
 }
 
 make_EHelper(alu_i){
-  //funct3字段
   switch (decinfo.isa.instr.funct3){
-    case 0x0://addi
+    case 0x0:  // addi
       rtl_addi(&s0, &id_src->val, id_src2->imm);
       rtl_sr(id_dest->reg, &s0, 4);
       print_asm_template3(addi);
-
       break;
+
+    case 0x3:  // sltiu 
+      rtl_setrelopi(RELOP_LTU, &s0, &id_src->val, id_src2->imm);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(sltiu);
+      break;
+
     default:
+      printf("alu_i: unknown funct3=0x%x\n", decinfo.isa.instr.funct3);
       assert(0);
   }
 }
