@@ -113,8 +113,13 @@ make_EHelper(alu_r) {
       print_asm_template3(sll);
       break;
 
-    case 0x4:  // div/divu
+    case 0x4:  // xor/div
       switch (decinfo.isa.instr.funct7) {
+        case 0x00:  // xor
+          rtl_xor(&s0, &id_src->val, &id_src2->val);
+          rtl_sr(id_dest->reg, &s0, 4);
+          print_asm_template3(xor);
+          break;
         case 0x01:  // div
           rtl_idiv_q(&s0, &id_src->val, &id_src2->val);
           rtl_sr(id_dest->reg, &s0, 4);
