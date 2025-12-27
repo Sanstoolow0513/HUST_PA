@@ -112,6 +112,18 @@ make_EHelper(alu_r) {
       rtl_sr(id_dest->reg, &s0, 4);
       print_asm_template3(sll);
       break;
+    
+    case 0x2:  // slt
+      rtl_setrelop(RELOP_LT, &s0, &id_src->val, &id_src2->val);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(slt);
+      break;
+    
+    case 0x3:  // sltu
+      rtl_setrelop(RELOP_LTU, &s0, &id_src->val, &id_src2->val);
+      rtl_sr(id_dest->reg, &s0, 4);
+      print_asm_template3(sltu);
+      break;
 
     case 0x4:  // xor/div
       switch (decinfo.isa.instr.funct7) {
