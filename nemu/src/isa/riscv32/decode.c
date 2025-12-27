@@ -59,10 +59,14 @@ make_DHelper(I){
 }
 
 make_DHelper(J){
-    int32_t imm = (decinfo.isa.instr.simm20 << 20) | 
-                (decinfo.isa.instr.imm10_1 << 1) | 
-                (decinfo.isa.instr.imm11 << 11) | 
-                (decinfo.isa.instr.imm19_12 << 12);
+  int32_t imm = (decinfo.isa.instr.simm20 << 20) |
+                  (decinfo.isa.instr.imm10_1 << 1) |
+                  (decinfo.isa.instr.imm11 << 11) |
+                  (decinfo.isa.instr.imm19_12 << 12);
+  //符号扩展(无语)
+  if (decinfo.isa.instr.simm20) {
+    imm |= 0xFFE00000;
+  }
   decode_op_i(id_src, imm, true);
   decode_op_r(id_dest, decinfo.isa.instr.rd, false);
 }
