@@ -27,3 +27,31 @@ make_EHelper(auipc) {
 
   print_asm_template2(auipc);
 }
+
+make_EHelper(alu_r) {
+  switch (decinfo.isa.instr.funct3) {
+    case 0x0:  // add/sub
+      switch (decinfo.isa.instr.funct7) {
+        case 0x00:  // add
+          rtl_add(&s0, &id_src->val, &id_src2->val);
+          rtl_sr(id_dest->reg, &s0, 4);
+          print_asm_template3(add);
+          break;
+        case 0x20:  // sub
+          rtl_sub(&s0, &id_src->val, &id_src2->val);
+          rtl_sr(id_dest->reg, &s0, 4);
+          print_asm_template3(sub);
+          break;
+        case 0x01:  // mul
+          rtl_mul_lo(&s0, &id_src->val, &id_src2->val);
+          rtl_sr(id_dest->reg, &s0, 4);
+          print_asm_template3(mul);
+          break;
+        default:
+          assert(0);
+      }
+      break;
+    default:
+      assert(0);
+  }
+}

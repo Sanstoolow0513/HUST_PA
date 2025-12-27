@@ -7,7 +7,7 @@ make_EHelper(st);
 make_EHelper(alu_i);
 make_EHelper(jal);
 make_EHelper(jalr);
-
+make_EHelper(alu_r);
 make_EHelper(auipc);
 
 make_EHelper(inv);
