@@ -11,7 +11,12 @@ typedef struct {
   } gpr[32];
 
   vaddr_t pc;
+   
+  vaddr_t sepc;
+  uint32_t sstatus;
+  uint32_t scause;
 
+  uint32_t stvec; //异常程序入口地址
 } CPU_state;
 
 static inline int check_reg_index(int index) {
