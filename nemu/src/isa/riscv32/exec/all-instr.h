@@ -13,3 +13,8 @@ make_EHelper(branch);
 make_EHelper(inv);
 make_EHelper(nemu_trap);
 make_EHelper(ldu);
+make_EHelper(system);  
+make_EHelper(ecall);    
+make_EHelper(csrrw);    
+make_EHelper(csrrs);    
+make_EHelper(sret);    
