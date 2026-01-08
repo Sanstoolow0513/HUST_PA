@@ -133,8 +133,8 @@ make_EHelper(csrrs) {
       case 0x102:  // sepc
         cpu.sepc = cpu.sepc | rs1_val;
         break;
-        case 0x104:  // stvec
-        case 0x105:  // stvec (alternative) 
+      case 0x104:  // stvec
+      case 0x105:  // stvec (alternative) 
         cpu.stvec = cpu.stvec | rs1_val;
         break;
       case 0x142:  // scause
