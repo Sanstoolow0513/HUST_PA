@@ -2,14 +2,13 @@
 #define __ARCH_H__
 
 struct _Context {
-  uintptr_t gpr[32];  // gpr[0]=x0, gpr[1]=x1, ..., gpr[31]=x31
-  uintptr_t sp_original;
+  uintptr_t gpr[32];  
+  // 注意：gpr[2]的位置实际上是sp_original（因为x2=sp不保存）
   uintptr_t scause;
   uintptr_t sstatus;
   uintptr_t sepc;
   struct _AddressSpace *as;
 };
-
 
 #define GPR1 gpr[17]   // a7寄存器（系统调用号）
 #define GPR2 gpr[10]   // a0寄存器（第一个参数）
