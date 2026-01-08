@@ -113,6 +113,7 @@ make_EHelper(system) {
           case 0x102: cpu.sepc &= ~rs1_val; break;
           case 0x104: 
           case 0x105: cpu.stvec &= ~rs1_val; break;
+          case 0x141: cpu.stvec &= ~rs1_val; break;
           case 0x142: cpu.scause &= ~rs1_val; break;
           default: assert(0);
         }
