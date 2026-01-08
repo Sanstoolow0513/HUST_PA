@@ -28,6 +28,7 @@ make_EHelper(system) {
         case 0x102: csr_val = cpu.sepc; break;
         case 0x104: 
         case 0x105: csr_val = cpu.stvec; break;
+        case 0x141: csr_val = cpu.stvec; break;  
         case 0x142: csr_val = cpu.scause; break;
         default: printf("Unknown CSR: 0x%x\n", csr_num); assert(0);
       }
@@ -41,6 +42,7 @@ make_EHelper(system) {
         case 0x102: cpu.sepc = rs1_val; break;
         case 0x104: 
         case 0x105: cpu.stvec = rs1_val; break;
+        case 0x141: cpu.stvec = rs1_val; break;  
         case 0x142: cpu.scause = rs1_val; break;
         default: assert(0);
       }
@@ -60,6 +62,7 @@ make_EHelper(system) {
         case 0x102: csr_val = cpu.sepc; break;
         case 0x104: 
         case 0x105: csr_val = cpu.stvec; break;
+        case 0x141: csr_val = cpu.stvec; break; 
         case 0x142: csr_val = cpu.scause; break;
         default: printf("Unknown CSR: 0x%x\n", csr_num); assert(0);
       }
@@ -74,6 +77,7 @@ make_EHelper(system) {
           case 0x102: cpu.sepc |= rs1_val; break;
           case 0x104: 
           case 0x105: cpu.stvec |= rs1_val; break;
+          case 0x141: cpu.stvec |= rs1_val; break;  
           case 0x142: cpu.scause |= rs1_val; break;
           default: assert(0);
         }
@@ -94,6 +98,7 @@ make_EHelper(system) {
         case 0x102: csr_val = cpu.sepc; break;
         case 0x104: 
         case 0x105: csr_val = cpu.stvec; break;
+        case 0x141: csr_val = cpu.stvec; break; 
         case 0x142: csr_val = cpu.scause; break;
         default: printf("Unknown CSR: 0x%x\n", csr_num); assert(0);
       }
