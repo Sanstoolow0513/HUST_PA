@@ -5,18 +5,26 @@ void raise_intr(uint32_t NO, vaddr_t epc);
 
 make_EHelper(system) {
   switch (decinfo.isa.instr.funct3) {
-    case 0x0:  // ecall/ebreak等
+    case 0x0:  // ecall/ebreak/sret等
       if (decinfo.isa.instr.rd == 0 && 
-          decinfo.isa.instr.rs1 == 0 &&
-          decinfo.isa.instr.funct7 == 0) {
-        // ecall
-        raise_intr(11, cpu.pc);
-        print_asm("ecall");
+          decinfo.isa.instr.rs1 == 0) {
+        // 需要通过funct7区分
+        if (decinfo.isa.instr.funct7 == 0) {
+          // ecall
+          raise_intr(11, cpu.pc);
+          print_asm("ecall");
+        } else if (decinfo.isa.instr.funct7 == 0x08) {
+          // sret: 0x10200073, funct7=0x08 (实际bits[31:25]=0001000)
+          decinfo.jmp_pc = cpu.sepc + 4;
+          decinfo.is_jmp = 1;
+          print_asm("sret");
+        } else {
+          assert(0);
+        }
       } else {
         assert(0);
       }
       break;
-      
     case 0x1: {  // csrrw
       uint32_t csr_num = decinfo.isa.instr.csr;
       uint32_t rs1_val = reg_l(decinfo.isa.instr.rs1);
@@ -123,19 +131,9 @@ make_EHelper(system) {
       break;
     }
     
-    case 0x5:  // 根据csr字段区分
-      if (decinfo.isa.instr.rd == 0 && 
-          decinfo.isa.instr.rs1 == 0 &&
-          decinfo.isa.instr.csr == 0x102) {  // sret
-        decinfo.jmp_pc = cpu.sepc + 4;
-        decinfo.is_jmp = 1;
-        print_asm("sret");
-      } else {
-        assert(0);
-      }
+    case 0x5:  
+      assert(0); // funct3=5不应该出现
       break;
-
-      
     default:
       assert(0);
   }
