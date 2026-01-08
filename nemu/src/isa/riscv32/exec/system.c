@@ -15,10 +15,13 @@ make_EHelper(system) {
       }
       break;
     case 0x1:  // csrrw
-      // 执行csrrw逻辑...
+      exec_csrrw(pc);
       break;
     case 0x2:  // csrrs
-      // 执行csrrs逻辑...
+      exec_csrrs(pc);
+      break;
+    case 0x3:  // csrrc
+      exec_csrrc(pc);
       break;
     case 0x5:  // 根据csr字段区分
       if (decinfo.isa.instr.csr == 0x102) {  // sret
@@ -33,6 +36,7 @@ make_EHelper(system) {
       assert(0);
   }
 }
+
 
 make_EHelper(ecall) {
 
@@ -56,6 +60,7 @@ make_EHelper(csrrw) {
       csr_val = cpu.sepc;
       break;
     case 0x104:  // stvec
+    case 0x105:  // stvec (alternative encoding)
       csr_val = cpu.stvec;
       break;
     case 0x142:  // scause
@@ -78,6 +83,7 @@ make_EHelper(csrrw) {
       cpu.sepc = rs1_val;
       break;
     case 0x104:  // stvec
+    case 0x105:  // stvec (alternative) 
       cpu.stvec = rs1_val;
       break;
     case 0x142:  // scause
@@ -104,6 +110,7 @@ make_EHelper(csrrs) {
       csr_val = cpu.sepc;
       break;
     case 0x104:  // stvec
+    case 0x105:  // stvec (alternative) 
       csr_val = cpu.stvec;
       break;
     case 0x142:  // scause
@@ -126,7 +133,8 @@ make_EHelper(csrrs) {
       case 0x102:  // sepc
         cpu.sepc = cpu.sepc | rs1_val;
         break;
-      case 0x104:  // stvec
+        case 0x104:  // stvec
+        case 0x105:  // stvec (alternative) 
         cpu.stvec = cpu.stvec | rs1_val;
         break;
       case 0x142:  // scause
