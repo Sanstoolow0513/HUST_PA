@@ -8,8 +8,6 @@ make_EHelper(jal){
     //jal
     rtl_add(&decinfo.jmp_pc, &cpu.pc, &id_src->val);
     decinfo.is_jmp = 1;
-    printf("JAL DEBUG: cpu.pc=0x%x, src->val=0x%x, jmp_pc=0x%x, *pc=0x%x\n",
-            (uint32_t)cpu.pc, id_src->val, (uint32_t)decinfo.jmp_pc, *pc);
     print_asm_template2(jal);
 }
 
