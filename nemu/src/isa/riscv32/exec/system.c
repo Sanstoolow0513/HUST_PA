@@ -124,7 +124,9 @@ make_EHelper(system) {
     }
     
     case 0x5:  // 根据csr字段区分
-      if (decinfo.isa.instr.csr == 0x102) {  // sret
+      if (decinfo.isa.instr.rd == 0 && 
+          decinfo.isa.instr.rs1 == 0 &&
+          decinfo.isa.instr.csr == 0x102) {  // sret
         decinfo.jmp_pc = cpu.sepc + 4;
         decinfo.is_jmp = 1;
         print_asm("sret");
@@ -132,6 +134,7 @@ make_EHelper(system) {
         assert(0);
       }
       break;
+
       
     default:
       assert(0);
