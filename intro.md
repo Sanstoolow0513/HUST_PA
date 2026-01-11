@@ -74,3 +74,19 @@ git push
 git checkout pa3
 git push -f hustpa pa3
 ```
+## start
+
+你需要在nemu下makefile.git中配置你的id，
+
+```bash
+grep --color=auto -r "STUID" .
+./Makefile:     STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s https://course.cunok.cn:52443/pa/scripts/submit.sh)"
+./Makefile:     STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s https://course.cunok.cn:52443/pa/scripts/info.sh)"
+./Makefile:     STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s https://course.cunok.cn:52443/pa/scripts/setup.sh)"
+./Makefile:     STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s https://course.cunok.cn:52443/pa/scripts/password.sh)"
+./nemu/Makefile.git:STUID = U202215561
+./nemu/Makefile.git:    -@(echo "> $(1)" && echo $(STUID) && id -un && uname -a && uptime && (head -c 20 /dev/urandom | hexdump -v -e '"%02x"') && echo) | git commit -F - 
+$(GITFLAGS)                                       
+```
+
+文档中有要求 username is your STUID，其实是你第一次make配置的时候设置的账号名字需要是学号，密码是自己设置的。
