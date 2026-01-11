@@ -8,8 +8,12 @@ _Context* __am_irq_handle(_Context *c) {
   if (user_handler) {
     _Event ev = {0};
     switch (c->scause) {
-      case 11:  // ecall from _yield()
-        ev.event = _EVENT_YIELD;
+      case 11:  // ecall
+        if ((int32_t)c->gpr[17] == -1) {  // a7 == -1 means yield
+          ev.event = _EVENT_YIELD;
+        } else {
+          ev.event = _EVENT_SYSCALL;
+        }
         break;
       default: ev.event = _EVENT_ERROR; break;
     }
