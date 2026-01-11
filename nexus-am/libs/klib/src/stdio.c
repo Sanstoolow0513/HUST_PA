@@ -61,6 +61,24 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
           *p++ = c;
           break;
         }
+        case 'x': {
+          unsigned int val = va_arg(ap, unsigned int);
+          char hex_buf[20];
+          int i = 0;
+          if (val == 0) {
+            hex_buf[i++] = '0';
+          } else {
+            while (val > 0) {
+              int digit = val & 0xf;
+              hex_buf[i++] = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
+              val >>= 4;
+            }
+          }
+          while (i > 0) {
+            *p++ = hex_buf[--i];
+          }
+          break;
+        }
         case 'p': {
           uintptr_t ptr = (uintptr_t)va_arg(ap, void*);
           *p++ = '0';
