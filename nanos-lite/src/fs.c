@@ -64,7 +64,9 @@ size_t fs_read(int fd, void *buf, size_t len) {
   assert(fd >= 0 && fd < NR_FILES);
   Finfo *f = &file_table[fd];
   if (f->read != NULL) {
-    return f->read(buf, f->open_offset, len);
+    size_t ret = f->read(buf, f->open_offset, len);
+    f->open_offset += ret;  // Update offset for device files too
+    return ret;
   }
   // Regular file: use ramdisk
   size_t remaining = f->size - f->open_offset;
@@ -77,7 +79,9 @@ size_t fs_write(int fd, const void *buf, size_t len) {
   assert(fd >= 0 && fd < NR_FILES);
   Finfo *f = &file_table[fd];
   if (f->write != NULL) {
-    return f->write(buf, f->open_offset, len);
+    size_t ret = f->write(buf, f->open_offset, len);
+    f->open_offset += ret;  // Update offset for device files too
+    return ret;
   }
   // Regular file: use ramdisk
   size_t remaining = f->size - f->open_offset;
