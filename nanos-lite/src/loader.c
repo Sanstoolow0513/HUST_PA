@@ -9,19 +9,32 @@
 # define Elf_Phdr Elf32_Phdr
 #endif
 
+int fs_open(const char *pathname, int flags, int mode);
+size_t fs_read(int fd, void *buf, size_t len);
+size_t fs_lseek(int fd, size_t offset, int whence);
+int fs_close(int fd);
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
+  int fd = fs_open(filename, 0, 0);
+  
   Elf_Ehdr ehdr;
-  ramdisk_read(&ehdr, 0, sizeof(Elf_Ehdr));
+  fs_read(fd, &ehdr, sizeof(Elf_Ehdr));
+  
   // Verify ELF magic
-  assert(*(uint32_t *)ehdr.e_ident == 0x464c457f);  // "\x7fELF"
+  assert(*(uint32_t *)ehdr.e_ident == 0x464c457f);
+  
   Elf_Phdr phdr;
   for (int i = 0; i < ehdr.e_phnum; i++) {
-    ramdisk_read(&phdr, ehdr.e_phoff + i * ehdr.e_phentsize, sizeof(Elf_Phdr));
+    fs_lseek(fd, ehdr.e_phoff + i * ehdr.e_phentsize, 0);  // SEEK_SET = 0
+    fs_read(fd, &phdr, sizeof(Elf_Phdr));
     if (phdr.p_type == PT_LOAD) {
-      ramdisk_read((void *)phdr.p_vaddr, phdr.p_offset, phdr.p_filesz);
+      fs_lseek(fd, phdr.p_offset, 0);
+      fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
       memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
     }
   }
+  
+  fs_close(fd);
   return ehdr.e_entry;
 }
 
