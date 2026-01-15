@@ -19,16 +19,28 @@ void hello_fun(void *arg) {
   }
 }
 
-void init_proc() {
-  switch_boot_pcb();
-
-  Log("Initializing processes...");
-
-  // load program here
-  naive_uload(NULL, "/bin/text");
-  // naive_uload(NULL, NULL);
+_Context* schedule(_Context *prev) {
+  //保存当前上下文
+  current->cp = prev;
+  //选择下一个进程/线程 (test总是选择pcb[0])
+  current = &pcb[0];
+  //返回新进程上下文
+  return current->cp;
 }
 
-_Context* schedule(_Context *prev) {
-  return NULL;
+void init_proc() {
+  Log("Initializing processes...");
+
+  // load program here PA3
+  // naive_uload(NULL, "/bin/text");
+  // naive_uload(NULL, NULL);
+
+
+  // 内核进程hello world pcb[0]范围从pcb[0].stack 到一个stack的大小
+  _Area stack;
+  stack.start = pcb[0].stack;
+  stack.end = pcb[0].stack + sizeof(pcb[0].stack);
+  pcb[0].cp = _kcontext(stack, hello_fun, NULL);
+  //pa4.1先不用加载
+  // naive_uload(NULL, "/bin/text");
 }

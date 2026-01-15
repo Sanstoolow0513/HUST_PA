@@ -41,7 +41,13 @@ int _cte_init(_Context*(*handler)(_Event, _Context*)) {
 }
 
 _Context *_kcontext(_Area stack, void (*entry)(void *), void *arg) {
-  return NULL;
+  //将栈顶指针定位到 stack.end，并向下预留 _Context 的大小
+  _Context *c = (_Context*)stack.end - 1; 
+  // 填充上下文
+  c->sepc = (uintptr_t)entry;     // 入口地址
+  c->sstatus = 0x1800;            // 状态寄存器: MPP=11 (Machine Mode), MPIE=1 (Enable Interrupt)
+  c->gpr[10] = (uintptr_t)arg;    // a0 传递的参数
+  return c;
 }
 
 void _yield() {
