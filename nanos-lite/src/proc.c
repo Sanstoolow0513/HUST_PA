@@ -13,7 +13,7 @@ void switch_boot_pcb() {
 void hello_fun(void *arg) {
   int j = 1;
   while (1) {
-    Log("Hello World from Nanos-lite for the %dth time!", j);
+    Log("Hello World from Nanos-lite for the %dth time! (%s)", j, (char *)arg);
     j ++;
     _yield();
   }
@@ -22,8 +22,8 @@ void hello_fun(void *arg) {
 _Context* schedule(_Context *prev) {
   //保存当前上下文
   current->cp = prev;
-  //选择下一个进程/线程 (test总是选择pcb[0])
-  current = &pcb[0];
+  //选择下一个进程/线程 (pcb[0] <-> pcb[1])
+  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
   //返回新进程上下文
   return current->cp;
 }
@@ -38,11 +38,14 @@ void init_proc() {
   // naive_uload(NULL, NULL);
 
 
-  // 内核进程hello world pcb[0]范围从pcb[0].stack 到一个stack的大小
+  // 内核进程hello world pcb[0]
   _Area stack;
   stack.start = pcb[0].stack;
   stack.end = pcb[0].stack + sizeof(pcb[0].stack);
-  pcb[0].cp = _kcontext(stack, hello_fun, NULL);
-  //pa4.1先不用加载
-  // naive_uload(NULL, "/bin/text");
+  pcb[0].cp = _kcontext(stack, hello_fun, "Thread-0");
+  
+  // 内核进程hello world pcb[1]
+  stack.start = pcb[1].stack;
+  stack.end = pcb[1].stack + sizeof(pcb[1].stack);
+  pcb[1].cp = _kcontext(stack, hello_fun, "Thread-1");
 }
