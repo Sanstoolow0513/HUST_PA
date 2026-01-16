@@ -38,6 +38,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       
       uintptr_t va_aligned = PGROUNDDOWN(va_start);
       uintptr_t va_end_aligned = PGROUNDUP(va_end);
+
+      // 更新 max_brk，使其指向最大的段结束地址
+      if (va_end > pcb->max_brk) {
+        pcb->max_brk = va_end;
+      }
       
       for (uintptr_t va = va_aligned; va < va_end_aligned; va += PGSIZE) {
         void *pa = new_page(1);
