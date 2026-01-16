@@ -10,6 +10,7 @@ static paddr_t page_translate(vaddr_t vaddr) {
   if (!paging_enabled()) {
     return vaddr;  // 未启用分页，直接返回
   }
+  
   paddr_t pdir_base = (cpu.satp & 0x3FFFFF) << 12;
   // 一级页表索引（va[31:22]）
   uint32_t vpn1 = (vaddr >> 22) & 0x3FF;
