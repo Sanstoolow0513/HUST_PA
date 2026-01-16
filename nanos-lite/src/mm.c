@@ -6,6 +6,10 @@ static void *pf = NULL;
 void* new_page(size_t nr_page) {
   void *p = pf;
   pf += PGSIZE * nr_page;
+  // 添加内存监控日志
+  if ((uintptr_t)pf >= (uintptr_t)_heap.end - 100 * PGSIZE) {
+    Log("Warning: Physical memory running low! pf=%p, heap_end=%p", pf, _heap.end);
+  }
   assert(pf < (void *)_heap.end);
   return p;
 }
@@ -17,6 +21,9 @@ void free_page(void *p) {
 /* The brk() system call handler. */
 int mm_brk(uintptr_t brk, intptr_t increment) {
 #ifdef HAS_VME
+  // 打印 brk 调用信息
+  // Log("mm_brk call: brk=0x%x, increment=0x%x, current->max_brk=0x%x", brk, increment, current->max_brk);
+  
   uintptr_t new_brk = brk + increment;
   
   // 如果新的 brk 超过 max_brk，需要映射新页面
@@ -25,6 +32,10 @@ int mm_brk(uintptr_t brk, intptr_t increment) {
     uintptr_t old_end = PGROUNDUP(current->max_brk);
     uintptr_t new_end = PGROUNDUP(new_brk);
     
+    if (new_end > old_end) {
+       Log("mm_brk allocating pages: 0x%x -> 0x%x (%d pages)", old_end, new_end, (new_end-old_end)/PGSIZE);
+    }
+
     // 分配并映射新页面
     for (uintptr_t va = old_end; va < new_end; va += PGSIZE) {
       void *pa = new_page(1);

@@ -8,10 +8,10 @@ static inline int paging_enabled() {
 
 static paddr_t page_translate(vaddr_t vaddr) {
   // 调试：当访问用户空间地址时输出 satp 状态
-  if (vaddr >= 0x40000000 && vaddr < 0x80000000) {
-    printf("[MMU] page_translate: vaddr=0x%08x, satp=0x%08x, paging=%d\n", 
-           vaddr, cpu.satp, paging_enabled());
-  }
+  // if (vaddr >= 0x40000000 && vaddr < 0x80000000) {
+  //   printf("[MMU] page_translate: vaddr=0x%08x, satp=0x%08x, paging=%d\n", 
+  //          vaddr, cpu.satp, paging_enabled());
+  // }
   
   if (!paging_enabled()) {
     return vaddr;  // 未启用分页，直接返回
