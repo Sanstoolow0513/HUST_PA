@@ -23,14 +23,19 @@ void hello_fun(void *arg) {
 
 _Context* schedule(_Context *prev) {
   current->cp = prev;
-  // 轮转逻辑：在 pcb[0], pcb[1], pcb[2] 之间切换
-  if (current == &pcb[0]) {
-    current = &pcb[1];
-  } else if (current == &pcb[1]) {
-    current = &pcb[2];
+
+  static int count = 0;
+  if (current == &pcb[2]) { // pal (High Priority)
+    count ++;
+    if (count < 100) return current->cp;
+    count = 0;
+    current = &pcb[0]; // Switch to events
+  } else if (current == &pcb[0]) {
+    current = &pcb[1]; // Switch to text
   } else {
-    current = &pcb[0];
+    current = &pcb[2]; // Switch back to pal
   }
+
   return current->cp;
 }
 
