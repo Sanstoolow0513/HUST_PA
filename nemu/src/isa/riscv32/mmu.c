@@ -32,7 +32,11 @@ static paddr_t page_translate(vaddr_t vaddr) {
   // 读取页目录项
   paddr_t pde_addr = pdir_base + vpn1 * 4;
   uint32_t pde = paddr_read(pde_addr, 4);
-  assert(pde & PTE_V);  // 检查有效位
+  if (!(pde & PTE_V)) {
+    printf("[MMU ERROR] PDE invalid! vaddr=0x%08x, pdir_base=0x%08x, vpn1=%d, pde=0x%08x\n",
+           vaddr, pdir_base, vpn1, pde);
+    assert(0);
+  }
   
   // 页表基址（pde[31:10] << 12）
   paddr_t ptab_base = (pde >> 10) << 12;
@@ -40,7 +44,11 @@ static paddr_t page_translate(vaddr_t vaddr) {
   // 读取页表项
   paddr_t pte_addr = ptab_base + vpn0 * 4;
   uint32_t pte = paddr_read(pte_addr, 4);
-  assert(pte & PTE_V);  // 检查有效位
+  if (!(pte & PTE_V)) {
+    printf("[MMU ERROR] PTE invalid! vaddr=0x%08x, ptab_base=0x%08x, vpn0=%d, pte=0x%08x\n",
+           vaddr, ptab_base, vpn0, pte);
+    assert(0);
+  }
   
   // 物理页号（pte[31:10] << 12）+ 偏移
   paddr_t paddr = ((pte >> 10) << 12) | offset;
