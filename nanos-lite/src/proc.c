@@ -46,5 +46,4 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/pal");
   context_uload(&pcb[1], "/bin/text");
   context_uload(&pcb[2], "/bin/events");
-  current = &pcb[0];
 }
