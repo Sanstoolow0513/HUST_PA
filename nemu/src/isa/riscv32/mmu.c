@@ -35,6 +35,8 @@ static paddr_t page_translate(vaddr_t vaddr) {
   if (!(pde & PTE_V)) {
     printf("[MMU ERROR] PDE invalid! vaddr=0x%08x, pdir_base=0x%08x, vpn1=%d, pde=0x%08x\n",
            vaddr, pdir_base, vpn1, pde);
+    printf("[MMU DEBUG] CPU state: PC=0x%08x, sp(x2)=0x%08x, ra(x1)=0x%08x\n",
+           cpu.pc, cpu.gpr[2], cpu.gpr[1]);
     assert(0);
   }
   
