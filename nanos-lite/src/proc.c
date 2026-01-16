@@ -23,19 +23,16 @@ void hello_fun(void *arg) {
 
 _Context* schedule(_Context *prev) {
   current->cp = prev;
-
   static int count = 0;
-  if (current == &pcb[2]) { // pal (High Priority)
+  if (current == &pcb[0]) { // 给 PCB 0 (pal) 高优先级
     count ++;
     if (count < 100) return current->cp;
     count = 0;
-    current = &pcb[0]; // Switch to events
-  } else if (current == &pcb[0]) {
-    current = &pcb[1]; // Switch to text
-  } else {
-    current = &pcb[2]; // Switch back to pal
   }
-
+  // 轮转：pcb[0] -> pcb[1] -> pcb[2] -> pcb[0]
+  if (current == &pcb[0]) current = &pcb[1];
+  else if (current == &pcb[1]) current = &pcb[2];
+  else current = &pcb[0];
   return current->cp;
 }
 
@@ -50,9 +47,4 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/pal");
   context_uload(&pcb[1], "/bin/text");
   context_uload(&pcb[2], "/bin/events");
-
-  
-  // 可选：双进程测试
-  // context_uload(&pcb[0], "/bin/hello");
-  // context_kload(&pcb[1], hello_fun);
 }
