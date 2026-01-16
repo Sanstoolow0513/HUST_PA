@@ -23,7 +23,9 @@ void hello_fun(void *arg) {
 
 _Context* schedule(_Context *prev) {
   // 保存当前进程的上下文
-  current->cp = prev;
+  if (current->cp != NULL) {
+    current->cp = prev;
+  }
 
   // 简单轮转：0 -> 1 -> 2 -> 0
   if (current == &pcb[0]) current = &pcb[1];
