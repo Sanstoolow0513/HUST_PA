@@ -26,7 +26,7 @@ _Context* schedule(_Context *prev) {
   static int count = 0;
   if (current == &pcb[0]) { // 给 PCB 0 (pal) 高优先级
     count ++;
-    if (count < 100) return current->cp;
+    if (count < 5) return current->cp;
     count = 0;
   }
   // 轮转：pcb[0] -> pcb[1] -> pcb[2] -> pcb[0]
