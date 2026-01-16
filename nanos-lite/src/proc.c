@@ -47,9 +47,9 @@ void init_proc() {
   // PA4.2 测试：加载用户进程
   // 为了体现多道程序与虚存切换（PA4.2非抢占），我们需要两个都会主动 yield 的程序
   // context_uload(&pcb[0], "/bin/dummy");
-  context_uload(&pcb[2], "/bin/pal");
+  context_uload(&pcb[0], "/bin/pal");
   context_uload(&pcb[1], "/bin/text");
-  context_uload(&pcb[0], "/bin/events");
+  context_uload(&pcb[2], "/bin/events");
 
   
   // 可选：双进程测试
