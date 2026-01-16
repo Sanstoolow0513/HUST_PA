@@ -50,7 +50,7 @@ _Context *_kcontext(_Area stack, void (*entry)(void *), void *arg) {
   _Context *c = (_Context*)stack.end - 1; 
   // 填充上下文
   c->sepc = (uintptr_t)entry;     // 入口地址
-  c->sstatus = 0x120;            // 状态寄存器: MPP=11 (Machine Mode), MPIE=1 (Enable Interrupt)
+  c->sstatus = 0x1800;            // 状态寄存器: MPP=11 (Machine Mode), MPIE=1 (Enable Interrupt)
   c->gpr[10] = (uintptr_t)arg;    // a0 传递的参数
   c->as = NULL;                   // 内核线程使用内核地址空间
   return c;

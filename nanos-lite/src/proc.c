@@ -1,5 +1,7 @@
 #include "proc.h"
 
+void context_uload(PCB *pcb, const char *filename);
+
 #define MAX_NR_PROC 4
 
 static PCB pcb[MAX_NR_PROC] __attribute__((used)) = {};

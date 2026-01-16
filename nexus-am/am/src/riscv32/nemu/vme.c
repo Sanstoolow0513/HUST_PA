@@ -110,7 +110,7 @@ _Context *_ucontext(_AddressSpace *as, _Area ustack, _Area kstack, void *entry, 
   _Context *c = (_Context *)kstack.end - 1;
   // 初始化
   c->sepc = (uintptr_t)entry;
-  c->sstatus = 0x20;           // MPIE=1, MPP=11
+  c->sstatus = 0;    
   c->gpr[10] = (uintptr_t)args;  // a0 = args
   c->gpr[2] = (uintptr_t)ustack.end;  // sp 指向用户栈顶
   // 设置地址空间指针

@@ -1,6 +1,10 @@
 #include "common.h"
 #include "syscall.h"
 #include "fs.h"
+#include "proc.h"
+
+int mm_brk(uintptr_t brk, intptr_t increment);
+void context_uload(PCB *pcb, const char *filename);
 
 int fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
@@ -17,8 +21,9 @@ _Context* do_syscall(_Context *c) {
   a[3] = c->GPR4;  // arg2
   switch (a[0]) {
     case SYS_exit:
-      naive_uload(NULL, "/bin/init");  // 批处理的逻辑
+      // naive_uload(NULL, "/bin/init");  // 批处理的逻辑 PA3
       // _halt(a[1]);  // Original behavior
+      context_uload(current, "/bin/init"); // PA4.2
       break;
     case SYS_yield:
       _yield();
@@ -40,10 +45,10 @@ _Context* do_syscall(_Context *c) {
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
       break;
     case SYS_brk:
-      c->GPRx = 0;
+      c->GPRx = mm_brk(a[1], 0);
       break;
     case SYS_execve:
-      naive_uload(NULL, (const char *)a[1]);
+      context_uload(current, (const char *)a[1]); 
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
