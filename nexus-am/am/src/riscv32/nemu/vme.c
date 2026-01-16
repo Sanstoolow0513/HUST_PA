@@ -75,16 +75,42 @@ void __am_get_cur_as(_Context *c) {
 }
 
 void __am_switch(_Context *c) {
-  if (vme_enable) {
+  if (vme_enable && c->as != NULL) {
     set_satp(c->as->ptr);
     cur_as = c->as;
   }
 }
 
 int _map(_AddressSpace *as, void *va, void *pa, int prot) {
+  // 页目录基址
+  PDE *pdir = (PDE *)as->ptr;
+  // 计算页目录索引和页表索引
+  uint32_t pdx = PDX(va);
+  uint32_t ptx = PTX(va);
+  // 检查页目录项是否有效
+  if (!(pdir[pdx] & PTE_V)) {
+    PTE *new_ptab = (PTE *)pgalloc_usr(1);
+    for (int i = 0; i < NR_PTE; i++) {
+      new_ptab[i] = 0;
+    }
+    // 设置页目录项：页表物理地址 >> 12 << 10 | PTE_V
+    pdir[pdx] = ((uintptr_t)new_ptab >> 12 << 10) | PTE_V;
+  }
+  PTE *ptab = (PTE *)PTE_ADDR(pdir[pdx]);
+  ptab[ptx] = ((uintptr_t)pa >> 12 << 10) | PTE_V | PTE_R | PTE_W | PTE_X;
+  
   return 0;
 }
 
 _Context *_ucontext(_AddressSpace *as, _Area ustack, _Area kstack, void *entry, void *args) {
-  return NULL;
+  // 在内核栈顶创建上下文
+  _Context *c = (_Context *)kstack.end - 1;
+  // 初始化
+  c->sepc = (uintptr_t)entry;
+  c->sstatus = 0x1800;           // MPIE=1, MPP=11
+  c->gpr[10] = (uintptr_t)args;  // a0 = args
+  c->gpr[2] = (uintptr_t)ustack.end;  // sp 指向用户栈顶
+  // 设置地址空间指针
+  c->as = as;
+  return c;
 }

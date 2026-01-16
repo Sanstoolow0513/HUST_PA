@@ -1,29 +1,34 @@
 #include <am.h>
 #include <riscv32.h>
 
+void __am_get_cur_as(_Context *c);
+void __am_switch(_Context *c);
+
 static _Context* (*user_handler)(_Event, _Context*) = NULL;
 
 _Context* __am_irq_handle(_Context *c) {
+    __am_get_cur_as(c);
   _Context *next = c;
   if (user_handler) {
     _Event ev = {0};
     switch (c->scause) {
-      case 11:  // ecall
-        if ((int32_t)c->gpr[17] == -1) {  // a7 == -1 means yield
+      case 11:
+        if ((int32_t)c->gpr[17] == -1) {
           ev.event = _EVENT_YIELD;
         } else {
           ev.event = _EVENT_SYSCALL;
         }
         break;
-      default: ev.event = _EVENT_ERROR; break;
+      default: 
+        ev.event = _EVENT_ERROR; 
+        break;
     }
-
     next = user_handler(ev, c);
     if (next == NULL) {
       next = c;
     }
   }
-
+  __am_switch(next);
   return next;
 }
 
@@ -47,6 +52,7 @@ _Context *_kcontext(_Area stack, void (*entry)(void *), void *arg) {
   c->sepc = (uintptr_t)entry;     // 入口地址
   c->sstatus = 0x1800;            // 状态寄存器: MPP=11 (Machine Mode), MPIE=1 (Enable Interrupt)
   c->gpr[10] = (uintptr_t)arg;    // a0 传递的参数
+  c->as = NULL;                   // 内核线程使用内核地址空间
   return c;
 }
 

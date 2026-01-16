@@ -20,11 +20,11 @@ void hello_fun(void *arg) {
 }
 
 _Context* schedule(_Context *prev) {
-  //保存当前上下文
+  // 保存当前上下文
   current->cp = prev;
-  //选择下一个进程/线程 (pcb[0] <-> pcb[1])
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-  //返回新进程上下文
+  // PA4.2 测试：只运行 pcb[0]
+  current = &pcb[0];
+  // 返回新进程上下文
   return current->cp;
 }
 
@@ -33,19 +33,10 @@ void init_proc() {
 
   Log("Initializing processes...");
 
-  // load program here PA3
-  // naive_uload(NULL, "/bin/text");
-  // naive_uload(NULL, NULL);
-
-
-  // 内核进程hello world pcb[0]
-  _Area stack;
-  stack.start = pcb[0].stack;
-  stack.end = pcb[0].stack + sizeof(pcb[0].stack);
-  pcb[0].cp = _kcontext(stack, hello_fun, "Thread-0");
+  // PA4.2 测试：加载用户进程
+  context_uload(&pcb[0], "/bin/dummy");
   
-  // 内核进程hello world pcb[1]
-  stack.start = pcb[1].stack;
-  stack.end = pcb[1].stack + sizeof(pcb[1].stack);
-  pcb[1].cp = _kcontext(stack, hello_fun, "Thread-1");
+  // 可选：双进程测试
+  // context_uload(&pcb[0], "/bin/hello");
+  // context_kload(&pcb[1], hello_fun);
 }
