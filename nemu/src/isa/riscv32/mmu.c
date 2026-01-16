@@ -2,8 +2,8 @@
 #define PGSIZE 4096
 #define PTE_V 0x01
 
-static inline bool paging_enabled() {
-  return cpu.satp & 0x80000000;
+static inline int paging_enabled() {
+  return (cpu.satp & 0x80000000) != 0;
 }
 
 static paddr_t page_translate(vaddr_t vaddr) {
