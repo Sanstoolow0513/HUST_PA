@@ -1,4 +1,5 @@
 #include "memory.h"
+#include "proc.h"
 
 static void *pf = NULL;
 

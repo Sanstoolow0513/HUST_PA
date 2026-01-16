@@ -1,6 +1,10 @@
 #include "proc.h"
 #include <elf.h>
 
+#ifdef HAS_VME
+#include <riscv32.h>
+#endif
+
 #ifdef __ISA_AM_NATIVE__
 # define Elf_Ehdr Elf64_Ehdr
 # define Elf_Phdr Elf64_Phdr
