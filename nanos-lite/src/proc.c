@@ -22,13 +22,15 @@ void hello_fun(void *arg) {
 }
 
 _Context* schedule(_Context *prev) {
-  // 保存当前上下文
   current->cp = prev;
-  
-  // 简单的轮转调度：在 pcb[0] 和 pcb[1] 之间切换
-  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-
-  // 返回新进程上下文
+  // 轮转逻辑：在 pcb[0], pcb[1], pcb[2] 之间切换
+  if (current == &pcb[0]) {
+    current = &pcb[1];
+  } else if (current == &pcb[1]) {
+    current = &pcb[2];
+  } else {
+    current = &pcb[0];
+  }
   return current->cp;
 }
 
@@ -40,9 +42,9 @@ void init_proc() {
   // PA4.2 测试：加载用户进程
   // 为了体现多道程序与虚存切换（PA4.2非抢占），我们需要两个都会主动 yield 的程序
   context_uload(&pcb[0], "/bin/dummy");
-  context_uload(&pcb[1], "/bin/dummy");
+  context_uload(&pcb[1], "/bin/pal");
   // context_uload(&pcb[2], "/bin/text");
-  // context_uload(&pcb[3], "/bin/events");
+  context_uload(&pcb[2], "/bin/events");
 
   
   // 可选：双进程测试
