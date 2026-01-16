@@ -1,7 +1,7 @@
 #include "common.h"
 
 _Context* schedule(_Context *prev);
-void do_syscall(_Context *c);
+_Context* do_syscall(_Context *c);
 
 static _Context* do_event(_Event e, _Context* c) {
   switch (e.event) {
@@ -10,7 +10,10 @@ static _Context* do_event(_Event e, _Context* c) {
       return schedule(c);//传入上下文c返回新的上下文
       break;
     case _EVENT_SYSCALL:
-      do_syscall(c);
+      _Context *next = do_syscall(c);
+      if (next != NULL) {
+        return next;  // SYS_exit/execve 返回新进程上下文
+      }
       break;
     default: panic("Unhandled event ID = %d", e.event);
   }

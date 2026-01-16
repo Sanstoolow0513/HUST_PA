@@ -24,6 +24,7 @@ _Context* do_syscall(_Context *c) {
       // naive_uload(NULL, "/bin/init");  // 批处理的逻辑 PA3
       // _halt(a[1]);  // Original behavior
       context_uload(current, "/bin/init"); // PA4.2
+      return schedule(c);
       break;
     case SYS_yield:
       _yield();
@@ -49,6 +50,7 @@ _Context* do_syscall(_Context *c) {
       break;
     case SYS_execve:
       context_uload(current, (const char *)a[1]); 
+      return schedule(c);
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
