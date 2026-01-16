@@ -76,7 +76,7 @@ void __am_get_cur_as(_Context *c) {
 
 void __am_switch(_Context *c) {
   if (vme_enable && c->as != NULL) {
-    printf("[VME] __am_switch: as=%p, pdir=%p\n", c->as, c->as->ptr);
+    // printf("[VME] __am_switch: as=%p, pdir=%p\n", c->as, c->as->ptr);
     set_satp(c->as->ptr);
     cur_as = c->as;
   } else {
