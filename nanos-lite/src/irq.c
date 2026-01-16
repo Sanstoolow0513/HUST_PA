@@ -14,6 +14,7 @@ static _Context* do_event(_Event e, _Context* c) {
       if (next != NULL) {
         return next;  // SYS_exit/execve 返回新进程上下文
       }
+      return schedule(c);
       break;
     default: panic("Unhandled event ID = %d", e.event);
   }

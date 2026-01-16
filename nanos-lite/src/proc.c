@@ -22,17 +22,14 @@ void hello_fun(void *arg) {
 }
 
 _Context* schedule(_Context *prev) {
+  // 保存当前进程的上下文
   current->cp = prev;
-  static int count = 0;
-  if (current == &pcb[0]) { // 给 PCB 0 (pal) 高优先级
-    count ++;
-    if (count < 2) return current->cp;
-    count = 0;
-  }
-  // 轮转：pcb[0] -> pcb[1] -> pcb[2] -> pcb[0]
+
+  // 简单轮转：0 -> 1 -> 2 -> 0
   if (current == &pcb[0]) current = &pcb[1];
   else if (current == &pcb[1]) current = &pcb[2];
   else current = &pcb[0];
+
   return current->cp;
 }
 
@@ -47,4 +44,5 @@ void init_proc() {
   context_uload(&pcb[0], "/bin/pal");
   context_uload(&pcb[1], "/bin/text");
   context_uload(&pcb[2], "/bin/events");
+  current = &pcb[0];
 }
