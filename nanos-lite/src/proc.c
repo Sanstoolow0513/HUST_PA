@@ -26,6 +26,9 @@ _Context* schedule(_Context *prev) {
   current->cp = prev;
   // PA4.2 测试：只运行 pcb[0]
   current = &pcb[0];
+  current = &pcb[1];
+  current = &pcb[2];
+  current = &pcb[4];
   // 返回新进程上下文
   return current->cp;
 }
@@ -37,6 +40,10 @@ void init_proc() {
 
   // PA4.2 测试：加载用户进程
   context_uload(&pcb[0], "/bin/dummy");
+  context_uload(&pcb[1], "/bin/hello");
+  context_uload(&pcb[2], "/bin/text");
+  context_uload(&pcb[3], "/bin/events");
+
   
   // 可选：双进程测试
   // context_uload(&pcb[0], "/bin/hello");
