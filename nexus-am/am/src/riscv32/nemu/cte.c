@@ -19,6 +19,9 @@ _Context* __am_irq_handle(_Context *c) {
           ev.event = _EVENT_SYSCALL;
         }
         break;
+      case 0x80000005:  // 时钟中断（IRQ_TIMER）
+        ev.event = _EVENT_IRQ_TIMER;
+        break;
       default: 
         ev.event = _EVENT_ERROR; 
         break;
@@ -42,6 +45,8 @@ int _cte_init(_Context*(*handler)(_Event, _Context*)) {
   // register event handler
   user_handler = handler;
 
+  _intr_write(1);
+
   return 0;
 }
 
@@ -61,8 +66,15 @@ void _yield() {
 }
 
 int _intr_read() {
-  return 0;
+  uint32_t sstatus;
+  asm volatile("csrr %0, sstatus" : "=r"(sstatus));
+  return (sstatus & 0x2) != 0; 
 }
 
 void _intr_write(int enable) {
+  if (enable) {
+    asm volatile("csrsi sstatus, 0x2");  // 设置 SIE
+  } else {
+    asm volatile("csrci sstatus, 0x2");  // 清除 SIE
+  }
 }

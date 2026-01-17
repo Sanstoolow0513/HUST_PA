@@ -16,6 +16,7 @@ typedef struct {
   uint32_t sstatus; // 处理器状态
   uint32_t scause;  // 异常原因
   uint32_t satp;    // 页表基址寄存器 (分页)
+  bool INTR;
 } CPU_state;
 
 static inline int check_reg_index(int index) {
